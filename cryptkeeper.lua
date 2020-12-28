@@ -1,6 +1,8 @@
 -- cryptkeeper
 -- manage and create crypts
 -- for arcologies
+-- v1.0.0-beta1 @wardores
+-- llllllll.co/t/cryptkeeper/
 --
 --
 -- e1 = select slot
