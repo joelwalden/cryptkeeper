@@ -1,8 +1,8 @@
 -- cryptkeeper
 -- manage and create crypts
 -- for arcologies
--- v1.0.0-beta1 @wardores
--- llllllll.co/t/cryptkeeper/
+-- v1.0.0 Joel Walden (@wardores)
+-- https://llllllll.co/t/cryptkeeper/39781
 --
 --
 -- e1 = select slot
@@ -22,6 +22,7 @@ ui = require('ui')
 MAX_SLOT_LENGTH = 28
 SLOT_RESERVED_SPACE = 30
 SAVE_PREFIX = _path.dust .. "audio/crypts/"
+TABS = ui.Tabs.new(1, {"1", "2", "3", "4", "5", "6", "7", "8", "S/L"})
 
 slots = {}
 active_slot = 1
@@ -103,17 +104,15 @@ function update_end_pos(d)
   redraw()  
 end
 
+function update_active(index)
+  active_slot = index
+  TABS:set_index(active_slot)
+end
+
 -- rendering functions
 
 function render_clip_slots()
-  for slot in pairs(slots) do
-    screen.move(slot * 12, 10)
-    screen.level(slot == active_slot and 15 or 4)
-    screen.text(slot)
-  end
-  screen.move(9*12, 10)
-  screen.level(active_slot == 9 and 15 or 4)
-  screen.text("S/L")
+  TABS:redraw()
 end
 
 function render_help_text()
@@ -169,7 +168,7 @@ function save_crypt(name)
     end
     is_saved = true
     save_load = false
-    active_slot = 1
+    update_active(1)
     reset_load_waveform()
     redraw()
   end
@@ -189,7 +188,7 @@ function load_crypt(name)
     end
     load_page = false
     save_load = false
-    active_slot = 1
+    update_active(1)
     reset_load_waveform()
     redraw()
   end
@@ -268,7 +267,8 @@ end
 function enc(n,d)
   if n == 1 then
     softcut.play(1,0)
-    active_slot = util.clamp(active_slot + d,1,9)
+    new_index = util.clamp(active_slot + d,1,9)
+    update_active(new_index)
     if active_slot == 9 then
       save_load = true
     else
@@ -359,5 +359,3 @@ end
 function is_loop()
   return loop == 1
 end
-
-
