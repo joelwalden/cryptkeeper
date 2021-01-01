@@ -163,7 +163,7 @@ function save_crypt(name)
     util.make_dir(save_directory)
     for k,v in ipairs(slots) do
       if v.file ~= nil then
-        softcut.buffer_write_mono(save_directory .. "/" .. k .. ".wav", v.start_pos, v.length, 1)
+        softcut.buffer_write_mono(save_directory .. "/" .. k .. ".wav", v.start_pos, (v.end_pos - v.start_pos), 1)
       end
     end
     is_saved = true
