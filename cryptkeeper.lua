@@ -1,7 +1,7 @@
 -- cryptkeeper
 -- manage and create crypts
 -- for arcologies
--- v1.0.0 Joel Walden (@wardores)
+-- v1.0.2 Joel Walden (@wardores)
 -- https://llllllll.co/t/cryptkeeper/39781
 --
 --
@@ -44,7 +44,6 @@ function file_select(file)
     load_file(file)
   end
   selecting = false
-  is_saved = false
   redraw()
 end
 
@@ -89,7 +88,6 @@ function update_content(buffer,winstart,winend,samples)
 end
 
 function update_start_pos(d)
-  is_saved = false
   delta = is_alt() and d * .005 or d * .5
   slots[active_slot].start_pos = util.clamp(slots[active_slot].start_pos + delta, buffer_offset(), buffer_offset() + slots[active_slot].length)
   softcut.loop_start(1, slots[active_slot].start_pos)
@@ -97,7 +95,6 @@ function update_start_pos(d)
 end
 
 function update_end_pos(d)
-  is_saved = false
   delta = is_alt() and d * .005 or d * .5
   slots[active_slot].end_pos = util.clamp(slots[active_slot].end_pos + delta, slots[active_slot].start_pos, buffer_offset() + slots[active_slot].length)
   softcut.loop_end(1, slots[active_slot].end_pos)
@@ -151,6 +148,10 @@ function render_start_end_indicators()
   screen.move(util.linlin(buffer_offset(),buffer_offset()+slots[active_slot].length,10,120,slots[active_slot].end_pos), 18)
   screen.line_rel(0,35)
   screen.stroke()
+  screen.move(10,60)
+  screen.text("s " .. util.round(slots[active_slot].start_pos - 1, 0.001))
+  screen.move(45,60)
+  screen.text("e " .. util.round(slots[active_slot].end_pos - 1, 0.001))
 end
 
 -- / rendering functions
@@ -168,9 +169,7 @@ function save_crypt(name)
     end
     is_saved = true
     save_load = false
-    update_active(1)
-    reset_load_waveform()
-    redraw()
+    load_crypt(name .. "/")
   end
 end
 
@@ -251,8 +250,10 @@ function redraw()
       screen.text("L")
     end
     if is_saved then
-      screen.move(10, 60)
-      screen.text("saved")
+      msg = ui.Message.new({"Saved"})
+      msg:redraw()
+      -- screen.move(10, 60)
+      -- screen.text("saved")
     end
   else
     if not load_page then
@@ -265,6 +266,7 @@ function redraw()
 end
 
 function enc(n,d)
+  is_saved = false
   if n == 1 then
     softcut.play(1,0)
     new_index = util.clamp(active_slot + d,1,9)
@@ -298,6 +300,7 @@ function enc(n,d)
 end
 
 function key(n,z)
+  is_saved = false
   if n==1 and z==1 then
     selecting = true
     fileselect.enter(_path.dust .. "audio", file_select)
@@ -359,3 +362,4 @@ end
 function is_loop()
   return loop == 1
 end
+
