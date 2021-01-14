@@ -19,10 +19,10 @@ fileselect = require("fileselect")
 textentry = require("textentry")
 ui = require('ui')
 
-MAX_SLOT_LENGTH = 28
-SLOT_RESERVED_SPACE = 30
+MAX_SLOT_LENGTH = 40
+SLOT_RESERVED_SPACE = 45
 SAVE_PREFIX = _path.dust .. "audio/crypts/"
-TABS = ui.Tabs.new(1, {"1", "2", "3", "4", "5", "6", "7", "8", "S/L"})
+TABS = ui.Tabs.new(1, {"1", "2", "3", "4", "5", "6", "S/L"})
 
 slots = {}
 active_slot = 1
@@ -149,9 +149,9 @@ function render_start_end_indicators()
   screen.line_rel(0,35)
   screen.stroke()
   screen.move(10,60)
-  screen.text("s " .. util.round(slots[active_slot].start_pos - 1, 0.001))
+  screen.text("s " .. util.round(slots[active_slot].start_pos - buffer_offset(), 0.001))
   screen.move(45,60)
-  screen.text("e " .. util.round(slots[active_slot].end_pos - 1, 0.001))
+  screen.text("e " .. util.round(slots[active_slot].end_pos - buffer_offset(), 0.001))
 end
 
 -- / rendering functions
@@ -180,7 +180,7 @@ function load_crypt(name)
     crypts_in_directory = util.os_capture("cd " .. pwd .. "&& ls -- *.wav")
     for f in string.gmatch(crypts_in_directory, "[^%s]+") do
       slot = tonumber(string.match(f, "%d"))
-      if slot < 9 then
+      if slot < 7 then
         active_slot = slot
         file_select(pwd .. f)
       end
@@ -205,7 +205,7 @@ end
 -- /save/load functions
 
 function init()
-  for i=1,8 do
+  for i=1,6 do
     slots[i] = {}
     slots[i].file = nil
     slots[i].start_pos = buffer_offset()
@@ -362,4 +362,3 @@ end
 function is_loop()
   return loop == 1
 end
-
